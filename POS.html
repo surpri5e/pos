@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>karinderya ngani</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: left;
+        }
+        .menu {
+            display: flex;
+            flex-wrap:wrap;
+            justify-content: left;
+            gap: 8px;
+            margin: 10px;
+        }
+        .menu button {
+            padding: 10px;
+            font-size: 15px;
+        }
+        .receipt {
+            margin-top: 20px;
+            border-top: 2px solid black;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BILI NA</h1>
+    <div class="menu" id="menu"></div>
+    <button onclick="checkout()">Okay na toh</button>
+    <div class="receipt" id="receipt"></div>
+
+    <script>
+        const menu = [
+            { name: "Adobong Manok / Baboy", price: 50 },
+            { name: "Caldereta", price: 50 },
+            { name: "Chicken w/ oyster & bell pepper", price: 45 },
+            { name: "Ginataang Gulay", price: 35 },
+            { name: "Ginataang Laing", price: 35 },
+            { name: "Ginataang Langka", price: 35 },
+            { name: "Ginisang Sardinas", price: 40 },
+            { name: "Menudo", price: 50 },
+            { name: "Okoy", price: 30 },
+            { name: "Pastil", price: 20 },
+            { name: "Pritong Manok", price: 28 },
+            { name: "Sinigang na baboy", price: 50 },
+            { name: "Sipo Egg", price: 45 },
+            { name: "Sweet & Sour (tilapia)", price: 35 },
+            { name: "Tinolang Manok / Baboy", price: 45 }
+        ];
+
+        let selectedItems = [];
+
+        function addItem(name, price) {
+            let item = selectedItems.find(i => i.name === name);
+            if (item) {
+                item.quantity++;
+            } else {
+                selectedItems.push({ name, price, quantity: 1 });
+            }
+        }
+
+        function checkout() {
+            if (selectedItems.length === 0) {
+                alert("parang tanga amp");
+                return;
+            }
+
+            let receipt = "<h2>RESIBO</h2><hr>";
+            let subtotal = 0;
+            
+            selectedItems.forEach(item => {
+                let total = item.price * item.quantity;
+                receipt += `${item.name} (x${item.quantity}) - ₱${total.toFixed(2)}<br>`;
+                subtotal += total;
+            });
+
+            let tax = subtotal * 0.10;
+            let total = subtotal + tax;
+            receipt += `<hr>Subtotal: ₱${subtotal.toFixed(2)}<br>Tax (10%): ₱${tax.toFixed(2)}<br><b>Total: ₱${total.toFixed(2)}</b><hr>`;
+            receipt += `<button onclick="processPayment(${total.toFixed(2)})">Bayad Po</button>`;
+
+            document.getElementById("receipt").innerHTML = receipt;
+        }
+
+        function processPayment(total) {
+            let cash = prompt("Bayad mo boss?: ₱");
+            cash = parseFloat(cash);
+
+            if (isNaN(cash) || cash < total) {
+                alert("Kulang pera mo. Balik ka nalang sa susunod");
+            } else {
+                let change = cash - total;
+                alert(`Sukli mo boss: ₱${change.toFixed(2)}\nWaW may pera.`);
+                selectedItems = [];
+                document.getElementById("receipt").innerHTML = "";
+            }
+        }
+
+        function loadMenu() {
+            const menuContainer = document.getElementById("menu");
+            menu.forEach(item => {
+                let button = document.createElement("button");
+                button.innerHTML = `${item.name} - ₱${item.price}`;
+                button.onclick = () => addItem(item.name, item.price);
+                menuContainer.appendChild(button);
+            });
+        }
+
+        loadMenu();
+    </script>
+</body>
+</html>
